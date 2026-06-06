@@ -1,0 +1,106 @@
+---
+title: "ENVS 193DS Final"
+format: pdf
+editor: source
+---
+
+[Github repository](https://github.com/lucia-murillo/ENVS-193DS_spring-2026_final)
+
+```{r}
+#| label: set-up
+
+# reading in packages 
+library(tidyverse)
+library(janitor)
+library(here)
+# new object `nests` from csv 
+nests <- read_csv("data/nest_data_final.csv")
+
+```
+
+# Problem 1: Research writing 
+
+## (a) 
+In part 1 they used . 
+In part 2 they used . 
+
+## (b) 
+We found that the distance to the water's edge tends to predict the probability that American Avocets would use a habitat. *** 
+
+We also found a relationship between bird species (American Avocet, Forster’s Tern, Black-necked Stilt) and the type of habitat (managed pond, non-tidal marsh, salt pond, tidal marsh, or tidal mudflat). ****
+
+## (c) 
+One additional variable that could influence the probability of American Avocet microhabitat use is the type of habitat, which is a categorical variable. They may have preferred food sources or shelter in some habitats and not others, which could influence the probability of microhabitat use. This was a relationship that was already explored ****** maybe not since alr explored?? 
+
+# Problem 2: Data analysis 
+
+```{r}
+#| label: data-exp
+
+```
+**MAKE SURE TO MAKE INVISIBLE** 
+
+## (a)
+```{r}
+#| label: clean-and-wrangle
+# creating new object from nests dataframe
+nests_clean <- nests |> 
+  # creating new column with full names of ants 
+  mutate(species_name = recode_values(
+    ant_species,
+  "RRB" ~ "C. mimosae",
+  "AB" ~ "C. sjostedti",
+  "BBR" ~ "C. nigriceps"
+    )) |> 
+  # reordering species levels 
+  mutate(species_name = 
+           as_factor(species_name),
+         species_name = 
+           fct_relevel(species_name, 
+                       "C. sjostedti",
+                       "C. mimosae",
+                       "C. nigriceps"
+                       )) |> 
+  # selecting columns of interest (species name, case_control, and height_cm)
+  select(species_name, case_control, height_cm) |> 
+  # dropping N/A values from species name column 
+  drop_na(species_name)
+```
+
+```{r}
+#| label: checking-structure
+# checking structure of data frame 
+str(nests_clean)
+```
+** MAKE SURE STRUCTURE LOOKS GOOD! ** 
+
+```{r}
+#| label: ten-rows
+# displaying from nests_clean 
+slice_sample(
+  nests_clean,
+  # displaying 10 rows 
+  n = 10)
+```
+
+## (b) 
+In this data set, the 0s and 1s represent whether a tree contained a nest (1) or was an "available" tree for comparison (0). 
+**expand on this?** 
+
+## (c) 
+
+Tree height is a continuous variable. I would expect that as height increases, the probability of nesting would also increase. This is supported by the article, which says that for every 1m increase in height, the odds that birds nested in a tree increased by 20% (Results section, paragraph 2). 
+
+Acacia ant species are categorical variables. I would expect that in trees with C. nigriceps and C. mimosae, there would be a higher probability of nest occurence. Based on the article, it seems that these ants are the most aggressive. This seems to increase probability of nests because these ants may help reduce the risk of nest predation (Discussion section of the article in paragraph 1). 
+
+## (d) 
+
+## (e) 
+
+## (f) 
+
+## (g) 
+
+
+
+
