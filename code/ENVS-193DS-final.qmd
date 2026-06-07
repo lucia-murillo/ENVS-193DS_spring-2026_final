@@ -13,6 +13,9 @@ editor: source
 library(tidyverse)
 library(janitor)
 library(here)
+library(ggeffects)
+library(MuMIn)
+
 # new object `nests` from csv 
 nests <- read_csv("data/nest_data_final.csv")
 
@@ -21,8 +24,8 @@ nests <- read_csv("data/nest_data_final.csv")
 # Problem 1: Research writing 
 
 ## (a) 
-In part 1 they used . 
-In part 2 they used . 
+In part 1 they used a linear model.  
+In part 2 they used a Pearson's test. 
 
 ## (b) 
 We found that the distance to the water's edge tends to predict the probability that American Avocets would use a habitat. *** 
@@ -91,7 +94,7 @@ In this data set, the 0s and 1s represent whether a tree contained a nest (1) or
 
 Tree height is a continuous variable. I would expect that as height increases, the probability of nesting would also increase. This is supported by the article, which says that for every 1m increase in height, the odds that birds nested in a tree increased by 20% (Results section, paragraph 2). 
 
-Acacia ant species are categorical variables. I would expect that in trees with C. nigriceps and C. mimosae, there would be a higher probability of nest occurence. Based on the article, it seems that these ants are the most aggressive. This seems to increase probability of nests because these ants may help reduce the risk of nest predation (Discussion section of the article in paragraph 1). 
+Acacia ant species are categorical variables. I would expect that in trees with C. nigriceps and C. mimosae, there would be a higher probability of nest occurrence. Based on the article, it seems that these ants are the most aggressive. This seems to increase probability of nests because these ants may help reduce the risk of nest predation (Discussion section of the article in paragraph 1). 
 
 ## (d) 
 
@@ -101,6 +104,27 @@ Acacia ant species are categorical variables. I would expect that in trees with 
 
 ## (g) 
 
+## (h) 
+
+## (i)
+
+## (j)
+
+## (k)
+
+# Problem 3: Affective and exploratory visualizations
+
+## (a) 
+
+The exploratory visualizations I made in Homework 2 are very different from the affective visualization I made for Homework 3. The exploratory visualizations were made to get information across in a simple and understandable way. The affective visualization contains data, but that is not the only goal. It is more about  being visually interesting with the explanation of the data being represented being on another sheet of paper. 
+
+They are all similar in that they come from the same dataset. The affective visualization is also similar to the boxplot from the exploratory visualization. They bot display the productivty at different locations. 
+
+In the affective visualization, the mean productivity levels are displayed, which show a similar pattern to the boxplot, which shows the median productivity among other things. The productivity based on the time of start does not share any patterns with the other two that I can determine. 
+
+In week 9, my group thought my idea was good. However, some members suggested that I add other variables from my data. I did not end up doing this because I was unsure how to do that in a way that would make sense logically and artistically. 
+
+## (b) 
 
 
 
