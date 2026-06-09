@@ -134,7 +134,7 @@ model2 <- lm(
   # formula: height interacting with species
   case_control ~ height_cm * species_name,
   # from clean data frame 
-  data = nests_clean
+  data = nests_clean)
 
 ```
 ** make sure to hide **!! 
@@ -168,25 +168,25 @@ plot(model1)
 
 ```{r}
 #| label: visual
+
+
+
+```
 # from woekshop 
-ggplot(data = drought_exp_clean,
-       mapping = aes(x = water_treatment, 
-                     y = total_g,
-                     color = water_treatment)) + 
+ggplot(data = nests_clean,
+       mapping = aes(x = species_name, 
+                     y = case_control,
+                     color = species_name)) + 
   geom_jitter(height = 0, 
               width = 0.1,
               alpha = 0.8) +
   geom_pointrange(data = preds,
-                  mapping = aes(x = water_treatment,
+                  mapping = aes(x = species_name,
                                y = predicted,
                                ymin = conf.low,
                                ymax = conf.high)) + 
   facet_wrap(~species_name) + 
   theme(legend.position = "none")
-
-
-```
-
 
 ## (i)
 
@@ -194,6 +194,8 @@ ggplot(data = drought_exp_clean,
 
 ```{r}
 #| label: model-preds
+
+```
 # workshop data 
 preds <- ggpredict(
   model4,
@@ -201,8 +203,6 @@ preds <- ggpredict(
 ) |> 
   rename(water_treatment = x,  
          species_name = group)
-```
-
 
 ## (k)
 
@@ -248,18 +248,52 @@ kruskal.test(
 )
 ```
 
+### Effect size 
+
 ```{r}
 #| label: effect-size
 
 # determining effect size  
 kruskal_effsize(
   # productivity rating as a function of location 
-  productivity_rating_1_5 ~ location,
+  productivity_rating_1_5 ~ location, 
   # data: personal data 
-  data = personal
-)
+  data = personal)
+```
+
+## (d)
+```{r}
+#| label: boxplots
+# base layer ggplot
+# data: personal data 
+ggplot(data = personal,
+       # x-axis: location
+       # y-axis: productivity rating 
+       mapping = aes(x = location,
+                     y = productivity_rating_1_5,
+                     # color by location 
+                     color = location)) + 
+  # first layer: boxplot 
+  geom_boxplot() + 
+  # second layer: jitter plot 
+  # adjusted height, width, opacity of points   
+  geom_jitter(height = 0,
+              width = 0.1,
+              alpha = 0.8) + 
+  # changing colors 
+  scale_color_manual(values = c("purple3", "navy")) + 
+  # changing axis titles and adding a title 
+  labs(x = "Location", 
+       y = "Productivity rating (1-5)", 
+       title = "Median productivity is higher in the library") + 
+  # minimal theme 
+  theme_minimal() 
 
 ```
 
+## (e)
+**Figure 1: Comparison of median productivity levels at home and the library.** Each boxplot represents a location where I have studied, and each point represents a single study session. The bold line in the boxes represent the median value, and the top and bottom of the boxes represent the 75th and 25th percentiles respectively. The whiskers span the distance of the lowest to the highest 25% of the data.
+
+## (f)
 
 
