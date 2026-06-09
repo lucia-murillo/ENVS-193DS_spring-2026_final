@@ -15,10 +15,25 @@ library(janitor)
 library(here)
 library(ggeffects)
 library(MuMIn)
+library(dplyr)
+library(rstatix)
 
-# new object `nests` from csv in `data` folder  
-# using "here" to identify location  
+# creating new object from csv in `data` folder  
+# using "here" to identify location of file   
 nests <- read_csv(here("data", "nest_data_final.csv"))
+
+# creating new value for removed variables in locations column
+loc_removed <- c("Cafe", "Amtrak", 
+        "Boyfriend's house", "UCen", 
+        "Arbor", "SRB")
+# creating new object from personal data 
+# # using "here" to identify location of file   
+personal <- read_csv(here("data",
+                          "personal.csv")) |> 
+  # cleaning columnn names 
+  clean_names() |> 
+  # removing loctations with fewer than 5 observations 
+ filter(!(location %in% loc_removed))
 
 ```
 ** make invisible!! ** 
@@ -99,25 +114,95 @@ Tree height is a continuous variable. I would expect that as height increases, t
 Acacia ant species are categorical variables. I would expect that in trees with C. nigriceps and C. mimosae, there would be a higher probability of nest occurrence. Based on the article, it seems that these ants are the most aggressive. This seems to increase probability of nests because these ants may help reduce the risk of nest predation (Discussion section of the article in paragraph 1). 
 
 ## (d) 
-| Model number | Tree height | Ant species | Predictor list |  
+| Model number | Tree height | Ant species | Interaction term |
 |--------------|:-----------:|:-----------:|:---------------------------------:|  
-| 0            |             |             | no predictors (null model)         |
-| 1            |  X          |  X          | all predictors (full model)        | 
-| 2            |  X          |             | Tree height                        |   
-| 3            |             |  X          | Ant species                        |
-
+| 0            |  X         |  X           | No               |
+| 1            |  X          |  X          | Yes              |
 ## (e) 
+```{r}
+#| label: model-fitting
 
+# model 0: additive model 
+model1 <- lm(
+  # formula: species and height
+  case_control ~ species_name + height_cm,
+  # from clean data frame 
+  data = nests_clean
+)
+# model 2: interactive model 
+model2 <- lm(
+  # formula: height interacting with species
+  case_control ~ height_cm * species_name,
+  # from clean data frame 
+  data = nests_clean
+
+```
+** make sure to hide **!! 
 
 ## (f) 
+```{r}
+# calculating AIC 
+AICc(
+  model1,
+  model2 
+) |> 
+  # arranging by AIC 
+  arrange(AICc)
+```
+
+The best model as determined by Akaike’s Information Criterion (AIC) is the one that uses both ant species and tree height to predict nest occurance (the full model). 
 
 ## (g) 
 
+```{r}
+#| label: checking-diagnostics
+
+# displaying plots in 2x2 grid 
+par(mfrow = c(2, 2))
+# 
+plot(model1)
+```
+
+
 ## (h) 
+
+```{r}
+#| label: visual
+# from woekshop 
+ggplot(data = drought_exp_clean,
+       mapping = aes(x = water_treatment, 
+                     y = total_g,
+                     color = water_treatment)) + 
+  geom_jitter(height = 0, 
+              width = 0.1,
+              alpha = 0.8) +
+  geom_pointrange(data = preds,
+                  mapping = aes(x = water_treatment,
+                               y = predicted,
+                               ymin = conf.low,
+                               ymax = conf.high)) + 
+  facet_wrap(~species_name) + 
+  theme(legend.position = "none")
+
+
+```
+
 
 ## (i)
 
 ## (j)
+
+```{r}
+#| label: model-preds
+# workshop data 
+preds <- ggpredict(
+  model4,
+  terms = c("water_treatment", "species_name")
+) |> 
+  rename(water_treatment = x,  
+         species_name = group)
+```
+
 
 ## (k)
 
@@ -134,6 +219,47 @@ In the affective visualization, the mean productivity levels are displayed, whic
 In week 9, my group thought my idea was good. However, some members suggested that I add other variables from my data. I did not end up doing this because I was unsure how to do that in a way that would make sense logically and artistically. 
 
 ## (b) 
+
+I will do a Kruskall-Wallis test to compare the median productivity rank at each location. It will tell me if there is a significant difference in my productivity levels in the library compared to at home. Since my predictor variable (location) is two unordered groups, it will work well for this test. My response variable (productivity) is ordinal, which works well for a Kruskall-Wallis test since it compares the ranks of scores and does not assume a normal distribution. Each study session is an independent observation. 
+
+## (c) 
+
+### Checking assumptions 
+1. Independence 
+Each study session is an independent observation. 
+2. Sample size: each group should have at least 5 observations. 
+Locations that had fewer than 5 observations were removed, leaving "Home" and "Library" 
+```{r}
+personal |> 
+  count(location, sort = TRUE)
+```
+
+### Running analysis 
+
+```{r}
+#| label: k-wallis
+
+# running kruskal-wallis test 
+kruskal.test(
+  # productivty as a function of location 
+  productivity_rating_1_5 ~ location, 
+  # data: personal data 
+  data = personal 
+)
+```
+
+```{r}
+#| label: effect-size
+
+# determining effect size  
+kruskal_effsize(
+  # productivity rating as a function of location 
+  productivity_rating_1_5 ~ location,
+  # data: personal data 
+  data = personal
+)
+
+```
 
 
 
