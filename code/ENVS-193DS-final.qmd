@@ -16,10 +16,12 @@ library(here)
 library(ggeffects)
 library(MuMIn)
 
-# new object `nests` from csv 
-nests <- read_csv("data/nest_data_final.csv")
+# new object `nests` from csv in `data` folder  
+# using "here" to identify location  
+nests <- read_csv(here("data", "nest_data_final.csv"))
 
 ```
+** make invisible!! ** 
 
 # Problem 1: Research writing 
 
@@ -97,8 +99,15 @@ Tree height is a continuous variable. I would expect that as height increases, t
 Acacia ant species are categorical variables. I would expect that in trees with C. nigriceps and C. mimosae, there would be a higher probability of nest occurrence. Based on the article, it seems that these ants are the most aggressive. This seems to increase probability of nests because these ants may help reduce the risk of nest predation (Discussion section of the article in paragraph 1). 
 
 ## (d) 
+| Model number | Tree height | Ant species | Predictor list |  
+|--------------|:-----------:|:-----------:|:---------------------------------:|  
+| 0            |             |             | no predictors (null model)         |
+| 1            |  X          |  X          | all predictors (full model)        | 
+| 2            |  X          |             | Tree height                        |   
+| 3            |             |  X          | Ant species                        |
 
 ## (e) 
+
 
 ## (f) 
 
