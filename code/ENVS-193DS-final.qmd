@@ -123,18 +123,20 @@ Acacia ant species are categorical variables. I would expect that in trees with 
 #| label: model-fitting
 
 # model 0: additive model 
-model1 <- lm(
+model1 <- glm(
   # formula: species and height
   case_control ~ species_name + height_cm,
   # from clean data frame 
-  data = nests_clean
+  data = nests_clean,
+  family = binomial(link = "logit")
 )
 # model 2: interactive model 
-model2 <- lm(
+model2 <- glm(
   # formula: height interacting with species
   case_control ~ height_cm * species_name,
   # from clean data frame 
-  data = nests_clean)
+  data = nests_clean,
+    family = binomial(link = "logit"))
 
 ```
 ** make sure to hide **!! 
@@ -160,34 +162,87 @@ The best model as determined by Akaike’s Information Criterion (AIC) is the on
 # displaying plots in 2x2 grid 
 par(mfrow = c(2, 2))
 # 
-plot(model1)
+plot(model2)
 ```
 
 
 ## (h) 
 
 ```{r}
-#| label: visual
-
-
-
+#| label: model-preds
+preds <- ggpredict(
+  model2,
+  terms = c("height_cm", "species_name")
+) |> 
+  rename(height_cm = x, 
+         species_name = group)
 ```
-# from woekshop 
+
+
+```{r}
+#| label: visualize-model-preds
+
+
 ggplot(data = nests_clean,
-       mapping = aes(x = species_name, 
+       mapping = aes(x = height_cm, 
                      y = case_control,
                      color = species_name)) + 
-  geom_jitter(height = 0, 
-              width = 0.1,
-              alpha = 0.8) +
   geom_pointrange(data = preds,
-                  mapping = aes(x = species_name,
+                  mapping = aes(x = height_cm,
                                y = predicted,
                                ymin = conf.low,
                                ymax = conf.high)) + 
-  facet_wrap(~species_name) + 
+
+  scale_color_manual(values = c("maroon", "darkgreen", "navy")) + 
+  facet_wrap(~species_name, 
+             scales = "free_x") + 
+  labs(
+    x = "Tree height (cm)", 
+    y = "Probability of nest presence",
+    title = "Nest presence changes based on ant 
+    species and tree height"
+  ) + 
+  theme(legend.position = "none",
+        panel.background = element_blank(),
+    panel.grid = element_blank(),
+    axis.ticks = element_blank())
+
+```
+
+gplot(data = nests_clean,
+       mapping = aes(x = height_cm, 
+                     y = case_control,
+                     color = species_name)) + 
+  geom_point() +
+ geom_ribbon(data = preds,
+              aes(x = height_cm,
+                  y = predicted,
+                  ymin = conf.low,
+                  ymax = conf.high),
+              alpha = 0.1) +
+  geom_line(data = preds,
+            aes(x = height_cm,
+                y = predicted)) +
+  scale_color_manual(values = c("maroon", "darkgreen", "navy")) + 
+  facet_wrap(~species_name, 
+             scales = "free_x") + 
+  labs(
+    x = "Species name", 
+    y = "Nest presence"
+  ) + 
+  theme_minimal() + 
   theme(legend.position = "none")
 
+
+geom_pointrange(data = preds,
+                  mapping = aes(x = height_cm,
+                               y = predicted,
+                               ymin = conf.low,
+                               ymax = conf.high)) + 
+,
+                     color = species_name
+facet_wrap(~species_name, 
+             scales = "free_x") + 
 ## (i)
 
 ## (j)
