@@ -234,6 +234,15 @@ personal |>
   count(location, sort = TRUE)
 ```
 
+```{r}
+dunn_test(
+  productivity_rating_1_5 ~ location,
+  data = personal,
+  p.adjust.method = "bonferroni"
+)
+```
+
+
 ### Running analysis 
 
 ```{r}
@@ -247,6 +256,18 @@ kruskal.test(
   data = personal 
 )
 ```
+
+```{r}
+#| label: medians
+# starting with personal data
+personal |> 
+  # grouping by location 
+  group_by(location) |> 
+  # calculating median productivity for each location 
+  summarise(median_prod = 
+              median(productivity_rating_1_5))
+```
+
 
 ### Effect size 
 
@@ -295,5 +316,8 @@ ggplot(data = personal,
 **Figure 1: Comparison of median productivity levels at home and the library.** Each boxplot represents a location where I have studied, and each point represents a single study session. The bold line in the boxes represent the median value, and the top and bottom of the boxes represent the 75th and 25th percentiles respectively. The whiskers span the distance of the lowest to the highest 25% of the data.
 
 ## (f)
-
-
+I found a small (η2 = 0.03)
+difference in median productivity 
+between the library and my home (Kruskal-Wallis test,
+$\chi^2$(1)= 0.234, p = 0.629, ⍺ = 0.05).
+There was not a significant difference in median productivity between the library (median productivity = 5) and my home (median productivity = 4.5) (Dunn's post hoc test: adjusted p-value= 0.629). 
