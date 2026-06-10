@@ -1,14 +1,21 @@
 ---
 title: "ENVS 193DS Final"
-format: pdf
-editor: source
+author: "Lucia Murillo"
+date: "2026-06-09" 
+format: 
+  pdf: 
+    toc: true 
+execute: 
+  message: false 
+  warning: false 
 ---
 
 [Github repository](https://github.com/lucia-murillo/ENVS-193DS_spring-2026_final)
 
 ```{r}
 #| label: set-up
-
+#| warning: FALSE
+#| message: FALSE
 # reading in packages 
 library(tidyverse)
 library(janitor)
@@ -17,15 +24,13 @@ library(ggeffects)
 library(MuMIn)
 library(dplyr)
 library(rstatix)
-
 # creating new object from csv in `data` folder  
 # using "here" to identify location of file   
 nests <- read_csv(here("data", "nest_data_final.csv"))
-
 # creating new value for removed variables in locations column
 loc_removed <- c("Cafe", "Amtrak", 
-        "Boyfriend's house", "UCen", 
-        "Arbor", "SRB")
+                 "Boyfriend's house", "UCen", 
+                 "Arbor", "SRB")
 # creating new object from personal data 
 # # using "here" to identify location of file   
 personal <- read_csv(here("data",
@@ -33,10 +38,8 @@ personal <- read_csv(here("data",
   # cleaning columnn names 
   clean_names() |> 
   # removing loctations with fewer than 5 observations 
- filter(!(location %in% loc_removed))
-
+  filter(!(location %in% loc_removed))
 ```
-** make invisible!! ** 
 
 # Problem 1: Research writing 
 
@@ -45,20 +48,12 @@ In part 1 they used a linear model.
 In part 2 they used a Pearson's test. 
 
 ## (b) 
-We found that the distance to the water's edge tends to predict the probability that American Avocets would use a habitat. *** 
-
-We also found a relationship between bird species (American Avocet, Forster’s Tern, Black-necked Stilt) and the type of habitat (managed pond, non-tidal marsh, salt pond, tidal marsh, or tidal mudflat). ****
+We found that the distance to the water's edge tends to predict the probability that American Avocets would use a habitat. We also found a relationship between bird species (American Avocet, Forster’s Tern, Black-necked Stilt) and the type of habitat (managed pond, non-tidal marsh, salt pond, tidal marsh, or tidal mudflat).
 
 ## (c) 
-One additional variable that could influence the probability of American Avocet microhabitat use is the type of habitat, which is a categorical variable. They may have preferred food sources or shelter in some habitats and not others, which could influence the probability of microhabitat use. This was a relationship that was already explored ****** maybe not since alr explored?? 
+One additional variable that could influence the probability of American Avocet microhabitat use is the type of habitat, which is a categorical variable. They may have preferred food sources or shelter in some habitats and not others, which could influence the probability of microhabitat use. 
 
 # Problem 2: Data analysis 
-
-```{r}
-#| label: data-exp
-
-```
-**MAKE SURE TO MAKE INVISIBLE** 
 
 ## (a)
 ```{r}
@@ -68,10 +63,10 @@ nests_clean <- nests |>
   # creating new column with full names of ants 
   mutate(species_name = recode_values(
     ant_species,
-  "RRB" ~ "C. mimosae",
-  "AB" ~ "C. sjostedti",
-  "BBR" ~ "C. nigriceps"
-    )) |> 
+    "RRB" ~ "C. mimosae",
+    "AB" ~ "C. sjostedti",
+    "BBR" ~ "C. nigriceps"
+  )) |> 
   # reordering species levels 
   mutate(species_name = 
            as_factor(species_name),
@@ -80,22 +75,13 @@ nests_clean <- nests |>
                        "C. sjostedti",
                        "C. mimosae",
                        "C. nigriceps"
-                       )) |> 
+           )) |> 
   # selecting columns of interest (species name, case_control, and height_cm)
   select(species_name, case_control, height_cm) |> 
   # dropping N/A values from species name column 
   drop_na(species_name)
-```
-
-```{r}
-#| label: checking-structure
 # checking structure of data frame 
 str(nests_clean)
-```
-** MAKE SURE STRUCTURE LOOKS GOOD! ** 
-
-```{r}
-#| label: ten-rows
 # displaying from nests_clean 
 slice_sample(
   nests_clean,
@@ -103,12 +89,11 @@ slice_sample(
   n = 10)
 ```
 
+
 ## (b) 
 In this data set, the 0s and 1s represent whether a tree contained a nest (1) or was an "available" tree for comparison (0). 
-**expand on this?** 
 
 ## (c) 
-
 Tree height is a continuous variable. I would expect that as height increases, the probability of nesting would also increase. This is supported by the article, which says that for every 1m increase in height, the odds that birds nested in a tree increased by 20% (Results section, paragraph 2). 
 
 Acacia ant species are categorical variables. I would expect that in trees with C. nigriceps and C. mimosae, there would be a higher probability of nest occurrence. Based on the article, it seems that these ants are the most aggressive. This seems to increase probability of nests because these ants may help reduce the risk of nest predation (Discussion section of the article in paragraph 1). 
@@ -118,6 +103,7 @@ Acacia ant species are categorical variables. I would expect that in trees with 
 |--------------|:-----------:|:-----------:|:---------------------------------:|  
 | 0            |  X         |  X           | No               |
 | 1            |  X          |  X          | Yes              |
+
 ## (e) 
 ```{r}
 #| label: model-fitting
@@ -136,10 +122,8 @@ model2 <- glm(
   case_control ~ height_cm * species_name,
   # from clean data frame 
   data = nests_clean,
-    family = binomial(link = "logit"))
-
+ family = binomial(link = "logit"))
 ```
-** make sure to hide **!! 
 
 ## (f) 
 ```{r}
@@ -152,10 +136,9 @@ AICc(
   arrange(AICc)
 ```
 
-The best model as determined by Akaike’s Information Criterion (AIC) is the one that uses both ant species and tree height to predict nest occurance (the full model). 
+The best model as determined by Akaike’s Information Criterion (AIC) is the one that uses the interaction ant species and tree height to predict nest occurence. 
 
 ## (g) 
-
 ```{r}
 #| label: checking-diagnostics
 
@@ -165,42 +148,41 @@ par(mfrow = c(2, 2))
 plot(model2)
 ```
 
+```{r}
+summary(model2)
+```
+
 
 ## (h) 
-
 ```{r}
 #| label: model-preds
 preds <- ggpredict(
   model2,
-  terms = c("height_cm", "species_name")
-) |> 
-  rename(height_cm = x, 
-         species_name = group)
+  terms = c("height_cm [all]", "species_name"))
 ```
-
 
 ```{r}
 #| label: visualize-model-preds
 
-
 ggplot(data = nests_clean,
-       mapping = aes(x = height_cm, 
+       mapping = aes(x = x, 
                      y = case_control,
-                     color = species_name)) + 
+                     color = group)) + 
   geom_pointrange(data = preds,
-                  mapping = aes(x = height_cm,
+                  mapping = aes(x = x,
                                y = predicted,
                                ymin = conf.low,
-                               ymax = conf.high)) + 
+                               ymax = conf.high,  
+                               alpha = 0.1)) + 
 
   scale_color_manual(values = c("maroon", "darkgreen", "navy")) + 
-  facet_wrap(~species_name, 
+  facet_wrap(~group, 
              scales = "free_x") + 
   labs(
     x = "Tree height (cm)", 
     y = "Probability of nest presence",
-    title = "Nest presence changes based on ant 
-    species and tree height"
+    title = "Nest presence probability changes based on 
+    ant species and tree height"
   ) + 
   theme(legend.position = "none",
         panel.background = element_blank(),
@@ -209,57 +191,23 @@ ggplot(data = nests_clean,
 
 ```
 
-gplot(data = nests_clean,
-       mapping = aes(x = height_cm, 
-                     y = case_control,
-                     color = species_name)) + 
-  geom_point() +
- geom_ribbon(data = preds,
-              aes(x = height_cm,
-                  y = predicted,
-                  ymin = conf.low,
-                  ymax = conf.high),
-              alpha = 0.1) +
-  geom_line(data = preds,
-            aes(x = height_cm,
-                y = predicted)) +
-  scale_color_manual(values = c("maroon", "darkgreen", "navy")) + 
-  facet_wrap(~species_name, 
-             scales = "free_x") + 
-  labs(
-    x = "Species name", 
-    y = "Nest presence"
-  ) + 
-  theme_minimal() + 
-  theme(legend.position = "none")
-
-
-geom_pointrange(data = preds,
-                  mapping = aes(x = height_cm,
-                               y = predicted,
-                               ymin = conf.low,
-                               ymax = conf.high)) + 
-,
-                     color = species_name
-facet_wrap(~species_name, 
-             scales = "free_x") + 
 ## (i)
+**Figure 1: Impact of ant species and tree height on birds nest occurrence.** Each panel represents the presence of a different species of ant. Maroon shows the data for C. sjostedti, green shows the data for C. mimosae, and navy shows the data for C. nigriceps. The points represent the probability of the presence of a birds nest with 1 being a birds nest and a 0 being no nest. These predictions are based on both the species and the height of the tree. The lines extending off the points represent a 95% confidence interval. 
 
 ## (j)
-
 ```{r}
-#| label: model-preds
-
+#| label: 600-prediction
+# calculating the presence prediction at height = 600 cm 
+ggpredict(
+  model2, # model object 
+  terms = c("height_cm [600]", 
+            "species_name [C. nigriceps]")
+)
 ```
-# workshop data 
-preds <- ggpredict(
-  model4,
-  terms = c("water_treatment", "species_name")
-) |> 
-  rename(water_treatment = x,  
-         species_name = group)
+
 
 ## (k)
+I found that the simplest model that represented the most variation in nest presence included tree height (cm) and ant species as interacting variables. Specifically, the interaction between C. nigriceps and height was a significant predictor of nest presence ($\beta$ = 0.084 z = 2.645, p = 0.008, $\alpha$ = 0.001). This indicates a strong relationship between tree height, presence of C. nigriceps ants, the occurrence of birds nests. The predicted probability of nest site occupancy at 600 cm with these variables is 1.00 (95% Ci 1.00, 1.00). This makes sense with the paper, as these ants are aggressive, which can protect the birds and their nests from predators. 
 
 # Problem 3: Affective and exploratory visualizations
 
@@ -283,7 +231,7 @@ I will do a Kruskall-Wallis test to compare the median productivity rank at each
 1. Independence 
 Each study session is an independent observation. 
 2. Sample size: each group should have at least 5 observations. 
-Locations that had fewer than 5 observations were removed, leaving "Home" and "Library" 
+Locations that had fewer than 5 observations were removed, leaving "Home" and "Library". 
 ```{r}
 personal |> 
   count(location, sort = TRUE)
@@ -297,9 +245,7 @@ dunn_test(
 )
 ```
 
-
 ### Running analysis 
-
 ```{r}
 #| label: k-wallis
 
@@ -323,9 +269,7 @@ personal |>
               median(productivity_rating_1_5))
 ```
 
-
 ### Effect size 
-
 ```{r}
 #| label: effect-size
 
